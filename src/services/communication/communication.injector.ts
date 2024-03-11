@@ -5,6 +5,8 @@ import { MockMessagingService } from './messaging.service/providers/mock.messagi
 import { TwilioMessagingService } from './messaging.service/providers/twilio.messaging.service';
 import { FirebaseNotificationService } from './notification.service/providers/firebase.notification.service';
 import { MockNotificationService } from './notification.service/providers/mock.notification.service';
+import { MockEmailService } from './email/providers/mock.email.service';
+import { SMTPEmailService } from './email/providers/smtp.email.service';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -13,6 +15,7 @@ export class CommunicationInjector {
     public static registerInjections(container: DependencyContainer) {
         CommunicationInjector.injectSmsProvider(container);
         CommunicationInjector.injectNotificationProvider(container);
+        CommunicationInjector.injectEmailProvider(container);
     }
 
     private static injectNotificationProvider(container: DependencyContainer) {
@@ -32,6 +35,16 @@ export class CommunicationInjector {
         }
         else if (smsProvider === 'Mock') {
             container.register('IMessagingService', MockMessagingService);
+        }
+    }
+
+    private static injectEmailProvider(container: DependencyContainer) {
+        const emailProvider = ConfigurationManager.EmailServiceProvider();
+        if (emailProvider === 'SendGrid') {
+            container.register('IEmailService', SMTPEmailService);
+        }
+        else if (emailProvider === 'Mock') {
+            container.register('IEmailService', MockEmailService);
         }
     }
 
